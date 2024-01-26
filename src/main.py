@@ -4,7 +4,7 @@ from google.oauth2 import service_account
 from googleapiclient import discovery
 
 def get_public_ip():
-    return requests.get('https://api.ipify.org').text
+    return requests.get('https://ifconfig.me/ip').text
 
 def load_env_variables(filename):
     if os.path.exists(filename):
@@ -12,6 +12,18 @@ def load_env_variables(filename):
             for line in file:
                 name, value = line.strip().split('=', 1)
                 os.environ[name] = value
+
+def replace_last_byte_with_zero(ip_address):
+    # Split the IP address into its octets
+    octets = ip_address.split('.')
+
+    # Replace the last octet with '0'
+    octets[-1] = '0'
+
+    # Join the octets back into a string
+    new_ip = '.'.join(octets)
+
+    return new_ip
 
 
 def update_firewall_rule(project_id, firewall_rule_name, network_name, source_ranges, compute):
@@ -25,7 +37,7 @@ def update_firewall_rule(project_id, firewall_rule_name, network_name, source_ra
         firewall_body = {
             "name": firewall_rule_name,
             "allowed": [{"IPProtocol": "all"}],  # Customize allowed protocols and ports
-            "sourceRanges": [f"{source_ranges}/32"],
+            "sourceRanges": [f"{source_ranges}/24"],
             "direction": "INGRESS",
             "priority": 1000,  # Customize priority
             "network": f"projects/{project_id}/global/networks/{network_name}",  # Customize network
@@ -34,7 +46,7 @@ def update_firewall_rule(project_id, firewall_rule_name, network_name, source_ra
         compute.firewalls().insert(project=project_id, body=firewall_body).execute()
         print(f"Firewall rule '{firewall_rule_name}' created.")
     # Update the source IP range of the firewall rule
-    update_body = {"sourceRanges": [f"{source_ranges}/32"]}
+    update_body = {"sourceRanges": [f"{source_ranges}/24"]}
     compute.firewalls().patch(project=project_id, firewall=firewall_rule_name, body=update_body).execute()
     print(f"Firewall rule '{firewall_rule_name}' updated with the new public IP address: {source_ranges}")
 
@@ -50,6 +62,7 @@ def main():
     )
     # Create a Google Cloud Compute Engine service client
     compute = discovery.build('compute', 'v1', credentials=credentials)
+    public_ip = replace_last_byte_with_zero(public_ip)
     update_firewall_rule(project_id, firewall_rule_name, network_name, public_ip, compute)
 
 if __name__ == '__main__':

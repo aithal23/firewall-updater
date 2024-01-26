@@ -2,7 +2,7 @@
 
 * Uses GCP service account with Compute Network Admin role
 * Creates a new firewall rule if it doesn't exist
-* Allows all traffic between your public IP and GCP account. 
+* Allows all traffic between your public IP /24 subnet and GCP account. 
 * Runs as cron job to periodically update the firewall
 
 ## Required variables
