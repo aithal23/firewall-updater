@@ -8,8 +8,8 @@
 ## Required variables
 
 ```
-GOOGLE_APPLICATION_CREDENTIALS=/mnt/d/Shared/VM/secrets/sadaithal-gcp-firewall-updater-sa.json
-PROJECT_ID=personal-363916
+GOOGLE_APPLICATION_CREDENTIALS=/mnt/secrets/gcp-service-account.json
+PROJECT_ID=personal-1101
 FIREWALL_RULE_NAME=allow-home-ip
 NETWORK_NAME=default
 CRON_EXPRESSION='30 4 * * *'

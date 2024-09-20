@@ -1,9 +1,9 @@
 #!/bin/bash
 
  docker run --name firewall-updater -d \
-  -v /mnt/d/Shared/VM/secrets/sadaithal-gcp-firewall-updater-sa.json:/usr/src/app/google_service_account.json \
+  -v /mnt/secrets/gcp-service-account.json:/usr/src/app/google_service_account.json \
   -e GOOGLE_APPLICATION_CREDENTIALS=/usr/src/app/google_service_account.json \
-  -e PROJECT_ID=personal-363916 \
+  -e PROJECT_ID=personal-1101 \
   -e FIREWALL_RULE_NAME=allow-home-ip \
   -e NETWORK_NAME=default \
   -e CRON_EXPRESSION='* * * * *' \
